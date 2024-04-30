@@ -4,8 +4,11 @@ const {
   setMention,
   startReminderInterval,
   members,
-} = require("./reminder");
-const { handleCommand, handleSelectMenu } = require("./interactionHandlers");
+} = require("./utils/reminder");
+const {
+  handleCommand,
+  handleSelectMenu,
+} = require("./handlers/interactionHandlers");
 
 let everyoneIntervalId;
 

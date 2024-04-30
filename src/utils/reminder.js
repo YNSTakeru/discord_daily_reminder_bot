@@ -1,4 +1,4 @@
-const client = require("./config");
+const client = require("../config");
 let mention = "";
 const hourMap = new Map();
 const members = new Map();

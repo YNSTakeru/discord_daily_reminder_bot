@@ -6,7 +6,7 @@ const {
   remindUsers,
   usernames,
   setMention,
-} = require("./reminder");
+} = require("../utils/reminder");
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 
 const hoursDataList = Array.from({ length: 24 }, (v, i) => ({
