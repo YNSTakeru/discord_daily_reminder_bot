@@ -18,7 +18,7 @@ client.login(process.env.BOT_TOKEN);
 let everyoneIntervalId;
 let mention = "";
 
-const hour = new Map();
+const hourMap = new Map();
 const members = new Map();
 const remindUsers = new Map();
 const usernames = new Map();
@@ -82,7 +82,7 @@ client.once("ready", async () => {
     .map((member) => `@${member.displayName}`)
     .join(" ");
 
-  everyoneIntervalId = startReminderInterval(16, 51);
+  everyoneIntervalId = startReminderInterval(17, 5);
 });
 
 const hoursDataList = Array.from({ length: 24 }, (v, i) => ({
@@ -131,7 +131,7 @@ async function handleSelectMenu(interaction) {
       minutesDataList
     );
 
-    hour.set(displayName, interaction.values[0]);
+    hourMap.set(displayName, interaction.values[0]);
 
     await interaction.reply({
       content: "リマインドしたい分を教えてください",
@@ -147,13 +147,13 @@ async function handleSelectMenu(interaction) {
       .join(" ");
 
     remindUsers.set(username, {
-      hour: +hour.get(displayName),
+      hour: +hourMap.get(displayName),
       minutes: +interaction.values[0],
     });
     usernames.set(username, displayName);
 
     await interaction.reply(
-      `${displayName}さん、設定ありがとうございます！ ${hour.get(
+      `${displayName}さん、設定ありがとうございます！ ${hourMap.get(
         displayName
       )}時${interaction.values[0]}分にお知らせいたしますね`
     );
