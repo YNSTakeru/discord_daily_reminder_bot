@@ -1,6 +1,4 @@
 const {
-  startReminderInterval,
-  mention,
   hourMap,
   members,
   remindUsers,
@@ -48,6 +46,9 @@ async function handleCommand(interaction) {
 async function handleSelectMenu(interaction) {
   const { displayName } = interaction.member;
 
+  let replyContent = "";
+  let components = [];
+
   if (interaction.customId === "selectHour") {
     const row = createSelectMenu(
       "selectMinute",
@@ -57,10 +58,8 @@ async function handleSelectMenu(interaction) {
 
     hourMap.set(displayName, interaction.values[0]);
 
-    await interaction.reply({
-      content: "リマインドしたい分を教えてください",
-      components: [row],
-    });
+    replyContent = "リマインドしたい分を教えてください";
+    components = [row];
   } else if (interaction.customId === "selectMinute") {
     const { username } = interaction.member.user;
 
@@ -78,11 +77,16 @@ async function handleSelectMenu(interaction) {
     });
     usernames.set(username, displayName);
 
-    await interaction.reply(
-      `${displayName}さん、設定ありがとうございます！ ${hourMap.get(
-        displayName
-      )}時${interaction.values[0]}分にお知らせいたしますね`
-    );
+    replyContent = `${displayName}さん、設定ありがとうございます！ ${hourMap.get(
+      displayName
+    )}時${interaction.values[0]}分にお知らせいたしますね`;
+  }
+
+  if (replyContent) {
+    await interaction.reply({
+      content: replyContent,
+      components,
+    });
   }
 }
 
