@@ -86,4 +86,12 @@ async function handleSelectMenu(interaction) {
   }
 }
 
-module.exports = { handleCommand, handleSelectMenu };
+async function handleInteraction(interaction) {
+  if (interaction.isCommand()) {
+    await handleCommand(interaction);
+  } else if (interaction.isStringSelectMenu()) {
+    await handleSelectMenu(interaction);
+  }
+}
+
+module.exports = { handleCommand, handleSelectMenu, handleInteraction };
