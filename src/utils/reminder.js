@@ -1,47 +1,35 @@
-const client = require("../config");
+const createInvertedMap = require("./createInvertedMap");
+const createMention = require("./createMention");
+const sendReminder = require("./sendReminder");
+
+const usernames = new Map();
 let mention = "";
 const hourMap = new Map();
 const members = new Map();
 const remindUsers = new Map();
-const usernames = new Map();
 
 function setMention(value) {
   mention = value;
 }
 
-function sendReminder(channelId, mention) {
-  const channel = client.channels.cache.get(channelId);
-  if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
-}
-
 function startReminderInterval(hour, minute) {
   return setInterval(() => {
     const date = new Date();
+    const currentHour = date.getHours();
+    const currentMinute = date.getMinutes();
 
-    if (
-      members.size > 0 &&
-      date.getHours() === hour &&
-      date.getMinutes() === minute
-    ) {
+    if (members.size > 0 && currentHour === hour && currentMinute === minute) {
       sendReminder(process.env.CHANNEL_ID, mention);
     }
 
-    const invertedMap = new Map();
-
-    remindUsers.forEach((value, key) => {
-      if (!invertedMap.has(value)) {
-        invertedMap.set(value, [key]);
-      } else {
-        invertedMap.get(value).push(key);
-      }
-    });
+    const invertedMap = createInvertedMap(remindUsers);
 
     for (const [key, value] of invertedMap) {
       const { hour, minutes } = key;
 
-      const newMention = value.map((v) => `@${usernames.get(v)}`).join(" ");
+      const newMention = createMention(value, usernames);
 
-      if (+date.getHours() === +hour && +date.getMinutes() === +minutes) {
+      if (currentHour === +hour && currentMinute === +minutes) {
         sendReminder(process.env.CHANNEL_ID, newMention);
       }
     }
