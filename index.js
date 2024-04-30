@@ -1,19 +1,11 @@
+const client = require("./config");
+
 const {
-  Client,
   Events,
-  GatewayIntentBits,
   ActionRowBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } = require("discord.js");
-
-require("dotenv").config();
-
-const client = new Client({
-  intents: Object.values(GatewayIntentBits).filter(Number.isInteger),
-});
-
-client.login(process.env.BOT_TOKEN);
 
 let everyoneIntervalId;
 let mention = "";
@@ -84,8 +76,6 @@ client.once("ready", async () => {
   mention = Array.from(members.values())
     .map((member) => `@${member.displayName}`)
     .join(" ");
-
-  console.log(mention);
 
   everyoneIntervalId = startReminderInterval(17, 17);
 });
