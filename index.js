@@ -19,6 +19,20 @@ let everyoneIntervalId;
 let members;
 let mention = "";
 
+const hour = new Map();
+const remindUsers = new Map();
+const usernames = new Map();
+
+function startReminderInterval(hour, minute, mention) {
+  return setInterval(() => {
+    const date = new Date();
+    if (date.getHours() === hour && date.getMinutes() === minute) {
+      const channel = client.channels.cache.get(process.env.CHANNEL_ID);
+      if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
+    }
+  }, 60000);
+}
+
 client.once("ready", async () => {
   console.log("Ready!");
 
@@ -37,13 +51,7 @@ client.once("ready", async () => {
 
   mention = members.map((member) => `@${member.displayName}`).join(" ");
 
-  everyoneIntervalId = setInterval(() => {
-    const date = new Date();
-    if (date.getHours() === 15 && date.getMinutes() === 0) {
-      const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-      if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
-    }
-  }, 60000);
+  everyoneIntervalId = startReminderInterval(22, 0, mention);
 });
 
 const hoursDataList = Array.from({ length: 24 }, (v, i) => ({
@@ -55,10 +63,6 @@ const minutesDataList = Array.from({ length: 12 }, (v, i) => ({
   label: `${i * 5}分`,
   value: `${i * 5}`,
 }));
-
-const hour = new Map();
-const remindUsers = new Map();
-const usernames = new Map();
 
 function createSelectMenu(customId, placeholder, options) {
   const menu = new StringSelectMenuBuilder()
