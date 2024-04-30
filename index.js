@@ -56,7 +56,7 @@ function startReminderInterval(hour, minute) {
         if (channel) channel.send(`${newMention} そろそろ日報投稿の時間です〜`);
       }
     }
-  }, 10000);
+  }, 60000);
 }
 
 client.once("ready", async () => {
@@ -144,59 +144,6 @@ async function handleSelectMenu(interaction) {
       minutes: +interaction.values[0],
     });
     usernames.set(username, displayName);
-
-    const keys = [...remindUsers.keys()];
-
-    let date = new Date();
-    let newMention;
-    for (const key of keys) {
-      const { hour, minutes } = remindUsers.get(key);
-
-      if (+date.getHours() === +hour && +date.getMinutes() === +minutes) {
-        newMention = `@${key}`.join(" ");
-      }
-    }
-
-    if (newMention) {
-      const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-      if (channel) channel.send(`${newMention} そろそろ日報投稿の時間です〜`);
-    }
-
-    clearInterval(everyoneIntervalId);
-
-    everyoneIntervalId = setInterval(() => {
-      date = new Date();
-      if (
-        members.size > 0 &&
-        date.getHours() === 22 &&
-        date.getMinutes() === 0
-      ) {
-        const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-        if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
-      }
-
-      const invertedMap = new Map();
-
-      remindUsers.forEach((value, key) => {
-        if (!invertedMap.has(value)) {
-          invertedMap.set(value, [key]);
-        } else {
-          invertedMap.get(value).push(key);
-        }
-      });
-
-      for (const [key, value] of invertedMap) {
-        const { hour, minutes } = key;
-
-        const newMention = value.map((v) => `@${usernames.get(v)}`).join(" ");
-
-        if (+date.getHours() === +hour && +date.getMinutes() === +minutes) {
-          const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-          if (channel)
-            channel.send(`${newMention} そろそろ日報投稿の時間です〜`);
-        }
-      }
-    }, 60000);
 
     await interaction.reply(
       `${displayName}さん、設定ありがとうございます！ ${hour.get(
