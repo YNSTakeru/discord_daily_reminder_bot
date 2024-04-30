@@ -23,6 +23,11 @@ const members = new Map();
 const remindUsers = new Map();
 const usernames = new Map();
 
+function sendReminder(channelId, mention) {
+  const channel = client.channels.cache.get(channelId);
+  if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
+}
+
 function startReminderInterval(hour, minute) {
   return setInterval(() => {
     const date = new Date();
@@ -32,8 +37,7 @@ function startReminderInterval(hour, minute) {
       date.getHours() === hour &&
       date.getMinutes() === minute
     ) {
-      const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-      if (channel) channel.send(`${mention} そろそろ日報投稿の時間です〜`);
+      sendReminder(process.env.CHANNEL_ID, mention);
     }
 
     const invertedMap = new Map();
@@ -52,8 +56,7 @@ function startReminderInterval(hour, minute) {
       const newMention = value.map((v) => `@${usernames.get(v)}`).join(" ");
 
       if (+date.getHours() === +hour && +date.getMinutes() === +minutes) {
-        const channel = client.channels.cache.get(process.env.CHANNEL_ID);
-        if (channel) channel.send(`${newMention} そろそろ日報投稿の時間です〜`);
+        sendReminder(process.env.CHANNEL_ID, newMention);
       }
     }
   }, 60000);
@@ -82,7 +85,9 @@ client.once("ready", async () => {
     .map((member) => `@${member.displayName}`)
     .join(" ");
 
-  everyoneIntervalId = startReminderInterval(17, 5);
+  console.log(mention);
+
+  everyoneIntervalId = startReminderInterval(17, 17);
 });
 
 const hoursDataList = Array.from({ length: 24 }, (v, i) => ({
