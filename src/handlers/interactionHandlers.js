@@ -44,8 +44,10 @@ async function handleCommand(interaction) {
 }
 
 async function handleSelectMenu(interaction) {
-  const { displayName } = interaction.member;
-
+  const {
+    displayName,
+    user: { username },
+  } = interaction.member;
   let replyContent = "";
   let components = [];
 
@@ -61,8 +63,6 @@ async function handleSelectMenu(interaction) {
     replyContent = "リマインドしたい分を教えてください";
     components = [row];
   } else if (interaction.customId === "selectMinute") {
-    const { username } = interaction.member.user;
-
     members.delete(username);
 
     setMention(

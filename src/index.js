@@ -8,7 +8,7 @@ async function initializeBot() {
   console.log("Ready!");
   await setBotCommand();
   await fetchMembers();
-  everyoneIntervalId = startReminderInterval(18, 45);
+  everyoneIntervalId = startReminderInterval(19, 7);
 }
 
 client.once("ready", initializeBot);
