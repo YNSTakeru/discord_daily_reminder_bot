@@ -16,10 +16,10 @@ const client = new Client({
 client.login(process.env.BOT_TOKEN);
 
 let everyoneIntervalId;
-let members;
 let mention = "";
 
 const hour = new Map();
+const members = new Map();
 const remindUsers = new Map();
 const usernames = new Map();
 
@@ -71,13 +71,18 @@ client.once("ready", async () => {
 
   const excludedUsers = ["replacethiswithsuggestion", "Shuzo_bot"];
 
-  members = (await guild.members.fetch()).filter(
-    (member) => !excludedUsers.includes(member.user.username)
-  );
+  const fetchedMembers = await guild.members.fetch();
+  fetchedMembers.forEach((member) => {
+    if (!excludedUsers.includes(member.user.username)) {
+      members.set(member.user.username, member);
+    }
+  });
 
-  mention = members.map((member) => `@${member.displayName}`).join(" ");
+  mention = Array.from(members.values())
+    .map((member) => `@${member.displayName}`)
+    .join(" ");
 
-  everyoneIntervalId = startReminderInterval(16, 31);
+  everyoneIntervalId = startReminderInterval(16, 51);
 });
 
 const hoursDataList = Array.from({ length: 24 }, (v, i) => ({
@@ -135,9 +140,11 @@ async function handleSelectMenu(interaction) {
   } else if (interaction.customId === "selectMinute") {
     const { username } = interaction.member.user;
 
-    members = members.filter((member) => member.user.username !== username);
+    members.delete(username);
 
-    mention = members.map((member) => `@${member.displayName}`).join(" ");
+    mention = Array.from(members.values())
+      .map((member) => `@${member.displayName}`)
+      .join(" ");
 
     remindUsers.set(username, {
       hour: +hour.get(displayName),
